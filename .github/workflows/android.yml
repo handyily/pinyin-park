@@ -25,20 +25,45 @@ jobs:
 
       - name: Prepare project
         run: |
-          if [ -d "android" ]; then
-            mkdir -p app gradle/wrapper
+          # 复制所有必要文件到根目录
+          mkdir -p app gradle/wrapper
+          
+          # 复制 Android 项目文件
+          if [ -d "android/app" ]; then
             cp -r android/app app
-            cp -r android/gradle/wrapper gradle/wrapper
-            cp -r android/build.gradle.kts build.gradle.kts
-            cp -r android/settings.gradle.kts settings.gradle.kts
-            cp -r android/gradle.properties gradle.properties
-            rm -rf android
           fi
-          # 删除损坏的 gradle-wrapper.jar
-          rm -f gradle/wrapper/gradle-wrapper.jar
-          echo "=== 项目文件 ==="
+          if [ -d "android/gradle/wrapper" ]; then
+            cp -r android/gradle/wrapper gradle/wrapper
+          fi
+          if [ -f "android/build.gradle.kts" ]; then
+            cp android/build.gradle.kts build.gradle.kts
+          fi
+          if [ -f "android/settings.gradle.kts" ]; then
+            cp android/settings.gradle.kts settings.gradle.kts
+          fi
+          if [ -f "android/gradle.properties" ]; then
+            cp android/gradle.properties gradle.properties
+          fi
+          if [ -f "android/gradlew" ]; then
+            cp android/gradlew gradlew
+            chmod +x gradlew
+          fi
+          if [ -f "android/gradlew.bat" ]; then
+            cp android/gradlew.bat gradlew.bat
+          fi
+          
+          # 删除 android 目录避免冲突
+          rm -rf android
+          
+          # 验证项目结构
+          echo "=== 根目录 ==="
           ls -la
+          echo "=== app 目录 ==="
+          ls -la app/
+          echo "=== gradle/wrapper 目录 ==="
           ls -la gradle/wrapper/
+          echo "=== settings.gradle.kts 内容 ==="
+          cat settings.gradle.kts
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
