@@ -26,7 +26,7 @@ jobs:
       - name: Move Android project to root
         run: |
           if [ -d "android" ]; then
-            # 复制文件到正确位置
+            mkdir -p app gradle/wrapper
             cp -r android/app app
             cp -r android/gradle/wrapper gradle/wrapper
             cp -r android/gradlew gradlew 2>/dev/null || true
@@ -36,23 +36,17 @@ jobs:
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
-          # 验证文件结构
-          echo "=== 项目根目录 ==="
-          ls -la
-          echo "=== gradle 目录 ==="
-          ls -la gradle/
-          echo "=== gradle/wrapper 目录 ==="
-          ls -la gradle/wrapper/
+          echo "=== 项目结构 ==="
+          find . -type f -name "*.gradle*" | head -20
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
+          gradle-version: 8.4
           validate-wrappers: false
 
       - name: Build with Gradle
-        run: |
-          chmod +x gradlew 2>/dev/null || true
-          ./gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
