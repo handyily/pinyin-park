@@ -23,11 +23,17 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Move Android project to root
+      - name: Move Android project files to root
         run: |
+          # 先移动除 .github 外的所有文件
           shopt -s dotglob
-          mv android/* .
-          rmdir android
+          for item in android/*; do
+            if [ "$(basename "$item")" != ".github" ]; then
+              mv "$item" . 2>/dev/null || true
+            fi
+          done
+          # 删除空的 android 目录
+          rmdir android 2>/dev/null || rm -rf android
 
       - name: Verify gradlew exists
         run: |
