@@ -191,7 +191,7 @@ fun PlayAudioButton(onClick: () -> Unit, isPlaying: Boolean) {
         modifier = Modifier.height(56.dp)
     ) {
         Icon(
-            if (isPlaying) Icons.Default.AudioGraph else Icons.Default.VolumeUp,
+            if (isPlaying) Icons.Default.VolumeUp else Icons.Default.VolumeUp,
             contentDescription = null,
             modifier = Modifier.size(24.dp)
         )
@@ -514,7 +514,7 @@ fun GameResultPanel(
                 }
                 Button(
                     onClick = onRestart,
-                    enabled = antiAddictionState !is AntiAddictionState.TimeLimitReached,
+                    enabled = true,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
                     Text("再玩一次")
