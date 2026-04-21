@@ -25,25 +25,16 @@ jobs:
 
       - name: Prepare project
         run: |
-          # 复制所有必要文件到根目录
           mkdir -p app gradle/wrapper
           
           # 复制 Android 项目文件
-          if [ -d "android/app" ]; then
-            cp -r android/app app
-          fi
-          if [ -d "android/gradle/wrapper" ]; then
-            cp -r android/gradle/wrapper gradle/wrapper
-          fi
-          if [ -f "android/build.gradle.kts" ]; then
-            cp android/build.gradle.kts build.gradle.kts
-          fi
-          if [ -f "android/settings.gradle.kts" ]; then
-            cp android/settings.gradle.kts settings.gradle.kts
-          fi
-          if [ -f "android/gradle.properties" ]; then
-            cp android/gradle.properties gradle.properties
-          fi
+          cp -r android/app app/
+          cp -r android/gradle/wrapper gradle/wrapper/
+          cp android/build.gradle.kts build.gradle.kts
+          cp android/settings.gradle.kts settings.gradle.kts
+          cp android/gradle.properties gradle.properties
+          
+          # 复制 gradlew（如果存在）
           if [ -f "android/gradlew" ]; then
             cp android/gradlew gradlew
             chmod +x gradlew
@@ -52,24 +43,31 @@ jobs:
             cp android/gradlew.bat gradlew.bat
           fi
           
-          # 删除 android 目录避免冲突
+          # 删除 android 目录
           rm -rf android
           
           # 验证项目结构
-          echo "=== 根目录 ==="
+          echo "=== 根目录文件 ==="
           ls -la
           echo "=== app 目录 ==="
           ls -la app/
-          echo "=== gradle/wrapper 目录 ==="
-          ls -la gradle/wrapper/
-          echo "=== settings.gradle.kts 内容 ==="
+          echo "=== settings.gradle.kts ==="
           cat settings.gradle.kts
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: 8.4
-          arguments: assembleDebug --no-daemon
+      - name: Download Gradle 8.4
+        run: |
+          cd /tmp
+          curl -fsSL -o gradle.zip https://services.gradle.org/distributions/gradle-8.4-bin.zip
+          unzip -q gradle.zip
+          export PATH="/tmp/gradle-8.4/bin:$PATH"
+          gradle --version
+
+      - name: Build with Gradle
+        run: |
+          export PATH="/tmp/gradle-8.4/bin:$PATH"
+          gradle assembleDebug --no-daemon --stacktrace
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
