@@ -25,16 +25,25 @@ jobs:
 
       - name: Prepare project
         run: |
+          # 复制所有必要文件到根目录
           mkdir -p app gradle/wrapper
           
           # 复制 Android 项目文件
-          cp -r android/app app/
-          cp -r android/gradle/wrapper gradle/wrapper/
-          cp android/build.gradle.kts build.gradle.kts
-          cp android/settings.gradle.kts settings.gradle.kts
-          cp android/gradle.properties gradle.properties
-          
-          # 复制 gradlew（如果存在）
+          if [ -d "android/app" ]; then
+            cp -r android/app app
+          fi
+          if [ -d "android/gradle/wrapper" ]; then
+            cp -r android/gradle/wrapper gradle/wrapper
+          fi
+          if [ -f "android/build.gradle.kts" ]; then
+            cp android/build.gradle.kts build.gradle.kts
+          fi
+          if [ -f "android/settings.gradle.kts" ]; then
+            cp android/settings.gradle.kts settings.gradle.kts
+          fi
+          if [ -f "android/gradle.properties" ]; then
+            cp android/gradle.properties gradle.properties
+          fi
           if [ -f "android/gradlew" ]; then
             cp android/gradlew gradlew
             chmod +x gradlew
@@ -43,29 +52,33 @@ jobs:
             cp android/gradlew.bat gradlew.bat
           fi
           
-          # 删除 android 目录
+          # 删除 android 目录避免冲突
           rm -rf android
           
           # 验证项目结构
-          echo "=== 根目录文件 ==="
+          echo "=== 根目录 ==="
           ls -la
           echo "=== app 目录 ==="
           ls -la app/
+          echo "=== app/src/main/java ==="
+          find app/src/main/java -name "*.kt" 2>/dev/null || echo "No Kotlin files found"
           echo "=== settings.gradle.kts ==="
           cat settings.gradle.kts
+          echo "=== build.gradle.kts ==="
+          cat build.gradle.kts
 
       - name: Download Gradle 8.4
         run: |
           cd /tmp
           curl -fsSL -o gradle.zip https://services.gradle.org/distributions/gradle-8.4-bin.zip
           unzip -q gradle.zip
-          export PATH="/tmp/gradle-8.4/bin:$PATH"
-          gradle --version
+          /tmp/gradle-8.4/bin/gradle --version
 
       - name: Build with Gradle
         run: |
-          export PATH="/tmp/gradle-8.4/bin:$PATH"
-          gradle assembleDebug --no-daemon --stacktrace
+          /tmp/gradle-8.4/bin/gradle assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
+          echo "=== BUILD LOG LAST 100 LINES ==="
+          tail -100 build.log
         env:
           JAVA_HOME: ${{ env.JAVA_HOME }}
 
@@ -75,4 +88,12 @@ jobs:
         with:
           name: pinyin-park-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-log
+          path: build.log
           retention-days: 7
