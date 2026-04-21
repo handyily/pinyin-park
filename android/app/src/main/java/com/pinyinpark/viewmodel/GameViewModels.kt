@@ -421,11 +421,11 @@ class BlockPuzzleViewModel : ViewModel() {
 
         val item = puzzleData[index]
         // 分解拼音为声母、韵母、声调
-        val (initial, final, tone) = parsePinyin(item.pinyin)
+        val (initial, final, tone) = parsePinyin(item.character)
 
         // 生成干扰项
-        val allInitials = PinyinData.shengMuList.map { it.pinyin }
-        val allFinals = PinyinData.yunMuList.map { it.pinyin }
+        val allInitials = PinyinData.shengMuList.map { it.character }
+        val allFinals = PinyinData.yunMuList.map { it.character }
 
         val blocks = mutableListOf<PuzzleBlock>()
 
@@ -444,7 +444,7 @@ class BlockPuzzleViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                targetPinyin = item.pinyin,
+                targetPinyin = item.character,
                 targetExample = item.exampleWord,
                 targetChar = item.character,
                 placedBlocks = listOf(
@@ -710,17 +710,17 @@ class ChainGameViewModel : ViewModel() {
 
         // 随机选一个开始
         val startItem = PinyinData.combinedList.random()
-        usedPinyins.add(startItem.pinyin)
+        usedPinyins.add(startItem.character)
 
-        val (_, final) = parsePinyin(startItem.pinyin)
+        val (_, final) = parsePinyin(startItem.character)
         lastFinal = final
 
         _uiState.update {
             it.copy(
-                currentPinyin = startItem.pinyin,
+                currentPinyin = startItem.character,
                 currentExample = startItem.exampleWord,
                 currentChar = startItem.character,
-                historyPinyins = listOf(startItem.pinyin),
+                historyPinyins = listOf(startItem.character),
                 score = 0,
                 chainLength = 1,
                 maxChainLength = 1,
@@ -793,7 +793,7 @@ class ChainGameViewModel : ViewModel() {
         if (state.isGameOver) return false
 
         // 检查是否已使用
-        if (usedPinyins.contains(item.pinyin)) {
+        if (usedPinyins.contains(item.character)) {
             _uiState.update { it.copy(showWrong = true) }
             viewModelScope.launch {
                 delay(500)
@@ -802,7 +802,7 @@ class ChainGameViewModel : ViewModel() {
             return false
         }
 
-        val (initial, final) = parsePinyin(item.pinyin)
+        val (initial, final) = parsePinyin(item.character)
 
         // 检查韵母是否匹配
         if (final != lastFinal) {
@@ -817,17 +817,17 @@ class ChainGameViewModel : ViewModel() {
         }
 
         // 正确
-        usedPinyins.add(item.pinyin)
+        usedPinyins.add(item.character)
         lastFinal = final
         val newChain = state.chainLength + 1
         val newScore = state.score + newChain * 5  // 连续越长分数越高
 
         _uiState.update {
             it.copy(
-                currentPinyin = item.pinyin,
+                currentPinyin = item.character,
                 currentExample = item.exampleWord,
                 currentChar = item.character,
-                historyPinyins = it.historyPinyins + item.pinyin,
+                historyPinyins = it.historyPinyins + item.character,
                 score = newScore,
                 chainLength = newChain,
                 maxChainLength = maxOf(it.maxChainLength, newChain),
@@ -843,9 +843,9 @@ class ChainGameViewModel : ViewModel() {
     private fun checkIfStuck() {
         // 查找可以接龙的下一个拼音
         val availableItems = PinyinData.combinedList.filter { item ->
-            !usedPinyins.contains(item.pinyin) &&
-                item.pinyin.startsWith(lastFinal) ||
-                parsePinyin(item.pinyin).second == lastFinal
+            !usedPinyins.contains(item.character) &&
+                item.character.startsWith(lastFinal) ||
+                parsePinyin(item.character).second == lastFinal
         }
 
         if (availableItems.isEmpty()) {
@@ -971,7 +971,7 @@ class MazeAdventureViewModel : ViewModel() {
                 maze = maze,
                 playerPosition = Position(1, 1),
                 targetPosition = Position(mazeSize - 2, mazeSize - 2),
-                currentTargetPinyin = targetItem.pinyin,
+                currentTargetPinyin = targetItem.character,
                 currentTargetExample = targetItem.exampleWord,
                 collectedPinyins = emptyList(),
                 isLevelComplete = false,
@@ -1008,7 +1008,7 @@ class MazeAdventureViewModel : ViewModel() {
 
         // 如果路径上有拼音，自动收集
         if (cell.pinyin != null) {
-            newCollected.add(cell.pinyin.pinyin)
+            newCollected.add(cell.pinyin!!.character)
             newScore += 5
 
             // 清除已收集的拼音显示

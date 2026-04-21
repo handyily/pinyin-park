@@ -130,7 +130,7 @@ data class LearnUiState(
     val isCompleted: Boolean = false
 )
 
-class LearnViewModel(private val chapter: LessonChapter, private val audioPlayer: AudioPlayerManager) : ViewModel() {
+class LearnViewModel(private val chapter: LessonChapter, private val audioPlayer: AudioPlayerManager? = null) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LearnUiState())
     val uiState: StateFlow<LearnUiState> = _uiState.asStateFlow()
@@ -147,16 +147,29 @@ class LearnViewModel(private val chapter: LessonChapter, private val audioPlayer
                 )
             }
         }
+        // 监听音频播放状态
+        audioPlayer?.let { player ->
+            viewModelScope.launch {
+                player.isPlaying.collect { isPlaying ->
+                    _uiState.update { it.copy(isPlayingAudio = isPlaying) }
+                }
+            }
+        }
     }
 
     fun playAudio() {
         val item = _uiState.value.currentItem ?: return
-        audioPlayer.playPinyin(item.character, item.exampleWord)
+        _uiState.update { it.copy(isPlayingAudio = true) }
+        audioPlayer?.playPinyin(item.character, item.exampleWord)
+            ?: viewModelScope.launch {
+                kotlinx.coroutines.delay(1500)
+                _uiState.update { it.copy(isPlayingAudio = false) }
+            }
     }
 
     fun playExampleWord() {
         val item = _uiState.value.currentItem ?: return
-        audioPlayer.playExampleWord(item.exampleWord)
+        audioPlayer?.playExampleWord(item.exampleWord)
     }
 
     fun toggleMouthShape() {
@@ -194,7 +207,7 @@ class LearnViewModel(private val chapter: LessonChapter, private val audioPlayer
 
     override fun onCleared() {
         super.onCleared()
-        audioPlayer.release()
+        audioPlayer?.release()
     }
 }
 

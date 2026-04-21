@@ -411,7 +411,7 @@ class AchievementViewModel : ViewModel() {
 
             if (isUnlocked && !badgeStatus.isUnlocked) {
                 // 解锁新徽章
-                showUnlockEffect(badgeStatus.badge.name, badgeStatus.badge.description, badgeStatus.badge.emoji)
+                showUnlockEffect(badgeStatus.badge.title, badgeStatus.badge.description, badgeStatus.badge.iconEmoji)
             }
 
             badgeStatus.copy(
