@@ -36,19 +36,18 @@ jobs:
             rm -rf android
           fi
 
-      - name: Fix gradle-wrapper.jar and set version
+      - name: Download gradle-wrapper.jar
         run: |
-          # 删除损坏的 jar
-          rm -f gradle/wrapper/gradle-wrapper.jar
-          # 指定 Gradle 8.4 版本
-          gradle wrapper --gradle-version 8.4
+          curl -L -o gradle/wrapper/gradle-wrapper.jar \
+            "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar"
+          ls -la gradle/wrapper/
 
       - name: Verify gradle-wrapper.jar
         run: |
           SIZE=$(wc -c < gradle/wrapper/gradle-wrapper.jar)
           echo "gradle-wrapper.jar size: $SIZE bytes"
           if [ "$SIZE" -lt 50000 ]; then
-            echo "ERROR: gradle-wrapper.jar 仍然无效"
+            echo "ERROR: gradle-wrapper.jar 无效"
             exit 1
           fi
 
