@@ -70,7 +70,7 @@ fun HomeScreen(
             // 游戏区域
             SectionTitle("🎮 趣味游戏")
             LazyHorizontalScroller(
-                items = GameType.values().toList(),
+                items = GameType.entries.toList(),
                 itemContent = { gameType ->
                     GameCard(gameType = gameType, onClick = { onGameClick(gameType) })
                 }
