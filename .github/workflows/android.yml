@@ -23,79 +23,40 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Prepare project
+      - name: Prepare project structure
         run: |
-          # 复制所有必要文件到根目录
-          mkdir -p app gradle/wrapper
-          
-          # 复制 Android 项目文件
-          if [ -d "android/app" ]; then
-            cp -r android/app app
-          fi
-          if [ -d "android/gradle/wrapper" ]; then
-            cp -r android/gradle/wrapper gradle/wrapper
-          fi
-          if [ -f "android/build.gradle.kts" ]; then
-            cp android/build.gradle.kts build.gradle.kts
-          fi
-          if [ -f "android/settings.gradle.kts" ]; then
-            cp android/settings.gradle.kts settings.gradle.kts
-          fi
-          if [ -f "android/gradle.properties" ]; then
-            cp android/gradle.properties gradle.properties
-          fi
-          if [ -f "android/gradlew" ]; then
-            cp android/gradlew gradlew
-            chmod +x gradlew
-          fi
-          if [ -f "android/gradlew.bat" ]; then
-            cp android/gradlew.bat gradlew.bat
-          fi
-          
-          # 删除 android 目录避免冲突
-          rm -rf android
-          
-          # 验证项目结构
-          echo "=== 根目录 ==="
+          echo "=== 当前目录结构 ==="
           ls -la
-          echo "=== app 目录 ==="
-          ls -la app/
-          echo "=== app/src/main/java ==="
-          find app/src/main/java -name "*.kt" 2>/dev/null || echo "No Kotlin files found"
-          echo "=== settings.gradle.kts ==="
-          cat settings.gradle.kts
-          echo "=== build.gradle.kts ==="
-          cat build.gradle.kts
 
-      - name: Download Gradle 8.4
-        run: |
-          cd /tmp
-          curl -fsSL -o gradle.zip https://services.gradle.org/distributions/gradle-8.4-bin.zip
-          unzip -q gradle.zip
-          /tmp/gradle-8.4/bin/gradle --version
+          # android 目录作为项目根目录
+          cd android
+          echo "=== android 目录 ==="
+          ls -la
+
+          # 确保 gradle wrapper jar 存在
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "ERROR: gradle-wrapper.jar 不存在"
+            exit 1
+          fi
+          echo "=== gradle wrapper ==="
+          ls -la gradle/wrapper/
 
       - name: Build with Gradle
+        working-directory: android
         run: |
-          /tmp/gradle-8.4/bin/gradle assembleDebug --no-daemon --stacktrace 2>&1
-          echo "=== 检查 APK 文件 ==="
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1
+
+      - name: Check APK output
+        working-directory: android
+        run: |
+          echo "=== APK 文件 ==="
           ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "APK目录不存在"
-          echo "=== 检查所有 build 输出 ==="
-          find app/build -name "*.apk" 2>/dev/null || echo "没有 APK 文件"
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         if: success()
         with:
           name: pinyin-park-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
-
-      - name: Upload build log
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: build-log
-          path: build.log
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
