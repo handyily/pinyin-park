@@ -23,22 +23,32 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Move Android project files to root
+      - name: Move Android project to root
+        if: always()
         run: |
-          # 先移动除 .github 外的所有文件
-          shopt -s dotglob
-          for item in android/*; do
-            if [ "$(basename "$item")" != ".github" ]; then
-              mv "$item" . 2>/dev/null || true
-            fi
-          done
-          # 删除空的 android 目录
-          rmdir android 2>/dev/null || rm -rf android
+          if [ -d "android" ]; then
+            cp -r android/app app
+            cp -r android/gradle gradle
+            cp -r android/gradlew gradlew
+            cp -r android/gradlew.bat gradlew.bat
+            cp -r android/build.gradle.kts build.gradle.kts
+            cp -r android/settings.gradle.kts settings.gradle.kts
+            cp -r android/gradle.properties gradle.properties
+            rm -rf android
+          fi
 
-      - name: Verify gradlew exists
+      - name: Fix gradle-wrapper.jar
         run: |
-          ls -la gradlew
-          ls -la gradle/wrapper/
+          # 检查 jar 文件是否有效（应该 > 50KB）
+          if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
+            SIZE=$(wc -c < gradle/wrapper/gradle-wrapper.jar)
+            if [ "$SIZE" -lt 1000 ]; then
+              echo "gradle-wrapper.jar 损坏 ($SIZE bytes)，删除并重新生成..."
+              rm gradle/wrapper/gradle-wrapper.jar
+            fi
+          fi
+          # 使用 gradle 命令生成 wrapper
+          gradle wrapper --gradle-version 8.4
 
       - name: Grant execute permission
         run: chmod +x gradlew
