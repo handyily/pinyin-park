@@ -76,9 +76,11 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          /tmp/gradle-8.4/bin/gradle assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
-          echo "=== BUILD LOG LAST 100 LINES ==="
-          tail -100 build.log
+          /tmp/gradle-8.4/bin/gradle assembleDebug --no-daemon --stacktrace 2>&1
+          echo "=== 检查 APK 文件 ==="
+          ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "APK目录不存在"
+          echo "=== 检查所有 build 输出 ==="
+          find app/build -name "*.apk" 2>/dev/null || echo "没有 APK 文件"
         env:
           JAVA_HOME: ${{ env.JAVA_HOME }}
 
