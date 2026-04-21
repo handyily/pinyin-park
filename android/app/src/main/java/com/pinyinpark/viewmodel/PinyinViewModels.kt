@@ -1,8 +1,11 @@
 package com.pinyinpark.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pinyinpark.model.*
+import com.pinyinpark.util.AudioPlayerManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +22,18 @@ data class HomeUiState(
     val chapters: List<LessonChapter> = emptyList(),
     val todayBadges: List<Badge> = emptyList(),
     val showCelebration: Boolean = false,
-    val celebrationMessage: String = ""
+    val celebrationMessage: String = "",
+    // 新增：奖杯和宠物数据
+    val totalStars: Int = 0,
+    val unlockedBadgesCount: Int = 0,
+    val totalBadgesCount: Int = PinyinData.allBadges.size,
+    val unlockedTrophiesCount: Int = 0,
+    val totalTrophiesCount: Int = 10,
+    val petLevel: Int = 1,
+    val petName: String = "小拼",
+    val petMood: PetMood = PetMood.HAPPY,
+    val petHunger: Int = 100,
+    val expProgress: Float = 0f
 )
 
 class HomeViewModel : ViewModel() {
@@ -37,10 +51,17 @@ class HomeViewModel : ViewModel() {
             val chapters = buildChapters()
             val progress = loadUserProgress()
 
+            // 统计已解锁的徽章
+            val unlockedBadges = progress.unlockedBadges.size
+
             _uiState.update {
                 it.copy(
                     userProgress = progress,
-                    chapters = chapters
+                    chapters = chapters,
+                    totalStars = progress.totalStars,
+                    unlockedBadgesCount = unlockedBadges,
+                    petLevel = progress.petLevel,
+                    petHunger = progress.petHunger
                 )
             }
         }
@@ -53,7 +74,7 @@ class HomeViewModel : ViewModel() {
             description = "认识21个声母小伙伴",
             iconEmoji = "🅱️",
             pinyinItems = PinyinData.shengMuList,
-            isUnlocked = true
+            isUnlocked = true  // 默认解锁
         ),
         LessonChapter(
             id = 2,
@@ -61,23 +82,23 @@ class HomeViewModel : ViewModel() {
             description = "学会35个韵母",
             iconEmoji = "🎵",
             pinyinItems = PinyinData.yunMuList,
-            isUnlocked = false
+            isUnlocked = true  // 默认解锁
         ),
         LessonChapter(
             id = 3,
             title = "四声宫殿",
             description = "掌握音调变化",
             iconEmoji = "🎶",
-            pinyinItems = emptyList(),
-            isUnlocked = false
+            pinyinItems = PinyinData.shengDiaoList,
+            isUnlocked = true  // 默认解锁
         ),
         LessonChapter(
             id = 4,
             title = "拼读城堡",
             description = "声母+韵母组合练习",
             iconEmoji = "🏰",
-            pinyinItems = emptyList(),
-            isUnlocked = false
+            pinyinItems = PinyinData.combinedList.take(20),  // 取前20个作为城堡入门
+            isUnlocked = true  // 默认解锁
         )
     )
 
@@ -109,7 +130,7 @@ data class LearnUiState(
     val isCompleted: Boolean = false
 )
 
-class LearnViewModel(private val chapter: LessonChapter) : ViewModel() {
+class LearnViewModel(private val chapter: LessonChapter, private val audioPlayer: AudioPlayerManager) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LearnUiState())
     val uiState: StateFlow<LearnUiState> = _uiState.asStateFlow()
@@ -129,12 +150,13 @@ class LearnViewModel(private val chapter: LessonChapter) : ViewModel() {
     }
 
     fun playAudio() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isPlayingAudio = true) }
-            // TODO: 调用 MediaPlayer 播放音频
-            delay(1500) // 模拟播放时长
-            _uiState.update { it.copy(isPlayingAudio = false) }
-        }
+        val item = _uiState.value.currentItem ?: return
+        audioPlayer.playPinyin(item.character, item.exampleWord)
+    }
+
+    fun playExampleWord() {
+        val item = _uiState.value.currentItem ?: return
+        audioPlayer.playExampleWord(item.exampleWord)
     }
 
     fun toggleMouthShape() {
@@ -168,6 +190,11 @@ class LearnViewModel(private val chapter: LessonChapter) : ViewModel() {
                 )
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        audioPlayer.release()
     }
 }
 

@@ -271,6 +271,84 @@ object PinyinData {
         PinyinItem("ong", "ong", PinyinType.YUN_MU, "audio_ong", "翁", "wēng")
     )
 
+    val shengDiaoList = listOf(
+        PinyinItem("1", "一声", PinyinType.SHENG_DIAO, "audio_1", "妈", "mā"),
+        PinyinItem("2", "二声", PinyinType.SHENG_DIAO, "audio_2", "麻", "má"),
+        PinyinItem("3", "三声", PinyinType.SHENG_DIAO, "audio_3", "马", "mǎ"),
+        PinyinItem("4", "四声", PinyinType.SHENG_DIAO, "audio_4", "骂", "mà")
+    )
+
+    val zhengTiList = listOf(
+        PinyinItem("zhi", "zhi", PinyinType.ZHENG_TI, "audio_zhi", "知识", "zhī shi"),
+        PinyinItem("chi", "chi", PinyinType.ZHENG_TI, "audio_chi", "吃", "chī"),
+        PinyinItem("shi", "shi", PinyinType.ZHENG_TI, "audio_shi", "是", "shì"),
+        PinyinItem("ri", "ri", PinyinType.ZHENG_TI, "audio_ri", "日", "rì"),
+        PinyinItem("zi", "zi", PinyinType.ZHENG_TI, "audio_zi", "字", "zì"),
+        PinyinItem("ci", "ci", PinyinType.ZHENG_TI, "audio_ci", "次", "cì"),
+        PinyinItem("si", "si", PinyinType.ZHENG_TI, "audio_si", "四", "sì")
+    )
+
+    val combinedList = listOf(
+        // 声母 + 单韵母
+        PinyinItem("ba", "ba", PinyinType.ZHENG_TI, "audio_ba", "爸", "bà"),
+        PinyinItem("bo", "bo", PinyinType.ZHENG_TI, "audio_bo", "拨", "bō"),
+        PinyinItem("bi", "bi", PinyinType.ZHENG_TI, "audio_bi", "笔", "bǐ"),
+        PinyinItem("bu", "bu", PinyinType.ZHENG_TI, "audio_bu", "不", "bù"),
+        PinyinItem("ma", "ma", PinyinType.ZHENG_TI, "audio_ma", "妈", "mā"),
+        PinyinItem("me", "me", PinyinType.ZHENG_TI, "audio_me", "么", "me"),
+        PinyinItem("mi", "mi", PinyinType.ZHENG_TI, "audio_mi", "米", "mǐ"),
+        PinyinItem("mu", "mu", PinyinType.ZHENG_TI, "audio_mu", "木", "mù"),
+        PinyinItem("da", "da", PinyinType.ZHENG_TI, "audio_da", "大", "dà"),
+        PinyinItem("de", "de", PinyinType.ZHENG_TI, "audio_de", "的", "de"),
+        PinyinItem("di", "di", PinyinType.ZHENG_TI, "audio_di", "弟", "dì"),
+        PinyinItem("du", "du", PinyinType.ZHENG_TI, "audio_du", "读", "dú"),
+        PinyinItem("fa", "fa", PinyinType.ZHENG_TI, "audio_fa", "发", "fā"),
+        PinyinItem("fe", "fe", PinyinType.ZHENG_TI, "audio_fe", "飞", "fēi"),
+        PinyinItem("fu", "fu", PinyinType.ZHENG_TI, "audio_fu", "父", "fù"),
+        PinyinItem("ge", "ge", PinyinType.ZHENG_TI, "audio_ge", "个", "gè"),
+        PinyinItem("gu", "gu", PinyinType.ZHENG_TI, "audio_gu", "古", "gǔ"),
+        PinyinItem("he", "he", PinyinType.ZHENG_TI, "audio_he", "喝", "hē"),
+        PinyinItem("hu", "hu", PinyinType.ZHENG_TI, "audio_hu", "虎", "hǔ"),
+        PinyinItem("ji", "ji", PinyinType.ZHENG_TI, "audio_ji", "鸡", "jī"),
+        PinyinItem("ju", "ju", PinyinType.ZHENG_TI, "audio_ju", "橘", "jú"),
+        PinyinItem("ka", "ka", PinyinType.ZHENG_TI, "audio_ka", "咖", "kā"),
+        PinyinItem("ku", "ku", PinyinType.ZHENG_TI, "audio_ku", "哭", "kū"),
+        PinyinItem("la", "la", PinyinType.ZHENG_TI, "audio_la", "拉", "lā"),
+        PinyinItem("le", "le", PinyinType.ZHENG_TI, "audio_le", "乐", "lè"),
+        PinyinItem("li", "li", PinyinType.ZHENG_TI, "audio_li", "梨", "lí"),
+        PinyinItem("lu", "lu", PinyinType.ZHENG_TI, "audio_lu", "路", "lù"),
+        PinyinItem("ma", "ma", PinyinType.ZHENG_TI, "audio_ma", "妈", "mā"),
+        PinyinItem("na", "na", PinyinType.ZHENG_TI, "audio_na", "拿", "ná"),
+        PinyinItem("ne", "ne", PinyinType.ZHENG_TI, "audio_ne", "呢", "ne"),
+        PinyinItem("ni", "ni", PinyinType.ZHENG_TI, "audio_ni", "你", "nǐ"),
+        PinyinItem("nu", "nu", PinyinType.ZHENG_TI, "audio_nu", "努", "nǔ"),
+        PinyinItem("pa", "pa", PinyinType.ZHENG_TI, "audio_pa", "爬", "pá"),
+        PinyinItem("pu", "pu", PinyinType.ZHENG_TI, "audio_pu", "扑", "pū"),
+        PinyinItem("qi", "qi", PinyinType.ZHENG_TI, "audio_qi", "七", "qī"),
+        PinyinItem("qu", "qu", PinyinType.ZHENG_TI, "audio_qu", "去", "qù"),
+        PinyinItem("re", "re", PinyinType.ZHENG_TI, "audio_re", "热", "rè"),
+        PinyinItem("ri", "ri", PinyinType.ZHENG_TI, "audio_ri", "日", "rì"),
+        PinyinItem("sa", "sa", PinyinType.ZHENG_TI, "audio_sa", "撒", "sā"),
+        PinyinItem("se", "se", PinyinType.ZHENG_TI, "audio_se", "色", "sè"),
+        PinyinItem("si", "si", PinyinType.ZHENG_TI, "audio_si", "四", "sì"),
+        PinyinItem("ta", "ta", PinyinType.ZHENG_TI, "audio_ta", "他", "tā"),
+        PinyinItem("te", "te", PinyinType.ZHENG_TI, "audio_te", "特", "tè"),
+        PinyinItem("ti", "ti", PinyinType.ZHENG_TI, "audio_ti", "踢", "tī"),
+        PinyinItem("tu", "tu", PinyinType.ZHENG_TI, "audio_tu", "图", "tú"),
+        PinyinItem("wa", "wa", PinyinType.ZHENG_TI, "audio_wa", "挖", "wā"),
+        PinyinItem("wo", "wo", PinyinType.ZHENG_TI, "audio_wo", "我", "wǒ"),
+        PinyinItem("xi", "xi", PinyinType.ZHENG_TI, "audio_xi", "西", "xī"),
+        PinyinItem("xu", "xu", PinyinType.ZHENG_TI, "audio_xu", "需", "xū"),
+        PinyinItem("ya", "ya", PinyinType.ZHENG_TI, "audio_ya", "鸭", "yā"),
+        PinyinItem("ye", "ye", PinyinType.ZHENG_TI, "audio_ye", "也", "yě"),
+        PinyinItem("yi", "yi", PinyinType.ZHENG_TI, "audio_yi", "一", "yī"),
+        PinyinItem("yo", "yo", PinyinType.ZHENG_TI, "audio_yo", "哟", "yō"),
+        PinyinItem("yu", "yu", PinyinType.ZHENG_TI, "audio_yu", "鱼", "yú"),
+        PinyinItem("za", "za", PinyinType.ZHENG_TI, "audio_za", "杂", "zá"),
+        PinyinItem("ze", "ze", PinyinType.ZHENG_TI, "audio_ze", "则", "zé"),
+        PinyinItem("zu", "zu", PinyinType.ZHENG_TI, "audio_zu", "足", "zú")
+    )
+
     val allBadges = listOf(
         Badge("first_speak", "初次发声", "第一次语音识别成功", "🎤",
             BadgeCondition(ConditionType.FIRST_SPEAK, 1)),
