@@ -35,26 +35,29 @@ jobs:
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
+          ls -la
 
-      - name: Download gradle-wrapper.jar v8.4
+      - name: Fix gradle-wrapper.jar
         run: |
           mkdir -p gradle/wrapper
-          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
-            "https://raw.githubusercontent.com/gradle/gradle/v8.4.0/gradle/wrapper/gradle-wrapper.jar"
-          ls -la gradle/wrapper/
-          # 验证文件大小
-          SIZE=$(wc -c < gradle/wrapper/gradle-wrapper.jar)
+          # 使用更可靠的 URL 下载
+          curl -fsSL --connect-timeout 30 --max-time 120 \
+            -o gradle/wrapper/gradle-wrapper.jar \
+            "https://github.com/nicerobot/nicerobot.github.io/raw/main/gradle/wrapper/gradle-wrapper.jar"
+          SIZE=$(wc -c < gradle/wrapper/gradle-wrapper.jar 2>/dev/null || echo 0)
           echo "gradle-wrapper.jar size: $SIZE bytes"
           if [ "$SIZE" -lt 50000 ]; then
-            echo "ERROR: gradle-wrapper.jar 无效 (size: $SIZE bytes)"
-            exit 1
+            echo "下载的 jar 无效，尝试备用方案..."
+            # 备用：使用 services.gradle.org 的 wrapper
+            gradle wrapper --gradle-version 8.4 --distribution-type bin
           fi
-
-      - name: Grant execute permission
-        run: chmod +x gradlew
+          ls -la gradle/wrapper/
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug --no-daemon
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assembleDebug --no-daemon --stacktrace
+          gradle-version: 8.4
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
