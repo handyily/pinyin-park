@@ -23,32 +23,25 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Move Android project to root
+      - name: Prepare project
         run: |
           if [ -d "android" ]; then
             mkdir -p app gradle/wrapper
             cp -r android/app app
             cp -r android/gradle/wrapper gradle/wrapper
-            cp -r android/gradlew gradlew 2>/dev/null || true
-            cp -r android/gradlew.bat gradlew.bat 2>/dev/null || true
             cp -r android/build.gradle.kts build.gradle.kts
             cp -r android/settings.gradle.kts settings.gradle.kts
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
-          echo "=== 项目结构 ==="
-          find . -type f -name "*.gradle*" | head -20
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.4
-          validate-wrappers: false
+          echo "=== 项目文件 ==="
+          ls -la
 
       - name: Build with Gradle
-        run: gradle assembleDebug --no-daemon
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.4
+          arguments: assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
