@@ -26,38 +26,30 @@ jobs:
       - name: Move Android project to root
         run: |
           if [ -d "android" ]; then
-            cp -r android/app app
-            cp -r android/gradle gradle
-            cp -r android/gradlew gradlew
-            cp -r android/gradlew.bat gradlew.bat
+            mkdir -p app gradle/wrapper build app/src
+            cp -r android/app/* app/
+            cp -r android/gradle/wrapper gradle/wrapper
+            cp -r android/gradlew gradlew 2>/dev/null || true
+            cp -r android/gradlew.bat gradlew.bat 2>/dev/null || true
             cp -r android/build.gradle.kts build.gradle.kts
             cp -r android/settings.gradle.kts settings.gradle.kts
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
           ls -la
-
-      - name: Fix gradle-wrapper.jar
-        run: |
-          mkdir -p gradle/wrapper
-          # 使用更可靠的 URL 下载
-          curl -fsSL --connect-timeout 30 --max-time 120 \
-            -o gradle/wrapper/gradle-wrapper.jar \
-            "https://github.com/nicerobot/nicerobot.github.io/raw/main/gradle/wrapper/gradle-wrapper.jar"
-          SIZE=$(wc -c < gradle/wrapper/gradle-wrapper.jar 2>/dev/null || echo 0)
-          echo "gradle-wrapper.jar size: $SIZE bytes"
-          if [ "$SIZE" -lt 50000 ]; then
-            echo "下载的 jar 无效，尝试备用方案..."
-            # 备用：使用 services.gradle.org 的 wrapper
-            gradle wrapper --gradle-version 8.4 --distribution-type bin
-          fi
           ls -la gradle/wrapper/
 
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
+      - name: Setup Gradle
+        uses: gradle/gradle-setup-action@v3
         with:
-          arguments: assembleDebug --no-daemon --stacktrace
           gradle-version: 8.4
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew 2>/dev/null || true
+          ./gradlew assembleDebug --no-daemon --stacktrace
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
