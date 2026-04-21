@@ -36,18 +36,15 @@ jobs:
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
-          ls -la
           ls -la gradle/wrapper/
 
       - name: Setup Gradle
-        uses: gradle/gradle-setup-action@v3
-        with:
-          gradle-version: 8.4
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
         run: |
           chmod +x gradlew 2>/dev/null || true
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug --no-daemon
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
