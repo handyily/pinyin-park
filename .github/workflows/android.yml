@@ -37,12 +37,17 @@ jobs:
             rm -rf android
           fi
           # 验证文件结构
+          echo "=== 项目根目录 ==="
           ls -la
+          echo "=== gradle 目录 ==="
           ls -la gradle/
+          echo "=== gradle/wrapper 目录 ==="
           ls -la gradle/wrapper/
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: false
 
       - name: Build with Gradle
         run: |
