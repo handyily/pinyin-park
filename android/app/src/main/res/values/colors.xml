@@ -5,4 +5,7 @@
     <color name="panda_background">#FFFFF8E1</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
+    <!-- App Icon colors -->
+    <color name="ic_launcher_background">#FFFF9800</color>
+    <color name="ic_launcher_foreground">#FFFFFFFF</color>
 </resources>
