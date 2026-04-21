@@ -182,11 +182,11 @@ data class VerificationChallenge(
     val isVerified: Boolean = false
 ) {
     companion object {
-        // 数字到大写汉字的映射
+        // 数字到大写汉字的映射（0-9）
         private val digitToChinese = mapOf(
             '0' to "零", '1' to "壹", '2' to "贰", '3' to "叁",
             '4' to "肆", '5' to "伍", '6' to "陆", '7' to "柒",
-            '8' to "扒", '9' to "玖"
+            '8' to "捌", '9' to "玖"
         )
 
         /**
