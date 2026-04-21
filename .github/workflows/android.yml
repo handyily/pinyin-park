@@ -25,15 +25,20 @@ jobs:
 
       - name: Move Android project to root
         run: |
+          shopt -s dotglob
           mv android/* .
-          mv android/.* . 2>/dev/null || true
-          rm -rf android
+          rmdir android
+
+      - name: Verify gradlew exists
+        run: |
+          ls -la gradlew
+          ls -la gradle/wrapper/
 
       - name: Grant execute permission
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
