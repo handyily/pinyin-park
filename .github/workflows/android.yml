@@ -26,8 +26,8 @@ jobs:
       - name: Move Android project to root
         run: |
           if [ -d "android" ]; then
-            mkdir -p app gradle/wrapper build app/src
-            cp -r android/app/* app/
+            # 复制文件到正确位置
+            cp -r android/app app
             cp -r android/gradle/wrapper gradle/wrapper
             cp -r android/gradlew gradlew 2>/dev/null || true
             cp -r android/gradlew.bat gradlew.bat 2>/dev/null || true
@@ -36,6 +36,9 @@ jobs:
             cp -r android/gradle.properties gradle.properties
             rm -rf android
           fi
+          # 验证文件结构
+          ls -la
+          ls -la gradle/
           ls -la gradle/wrapper/
 
       - name: Setup Gradle
