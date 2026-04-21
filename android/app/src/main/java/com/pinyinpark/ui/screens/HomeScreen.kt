@@ -53,7 +53,7 @@ fun HomeScreen(
 
             // 学习章节区域
             SectionTitle("📚 学习章节")
-            LazyVerticalScroll(
+            LazyColumn(
                 modifier = Modifier.height(280.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
